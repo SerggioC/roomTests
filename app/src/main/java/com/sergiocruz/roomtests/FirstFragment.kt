@@ -126,7 +126,7 @@ class FirstFragment : Fragment() {
 
         wordViewModel.allUsers.observe(viewLifecycleOwner) {
             binding.editTextTextPersonName.setText(it?.getOrNull(0)?.firstName ?: "")
-            Log.i("Sergio", "setupObservers allusers: $it")
+            Log.i("Sergio", "setupObservers allusers")
         }
     }
 }

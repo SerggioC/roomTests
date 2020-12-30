@@ -11,7 +11,7 @@ data class UserWithAddress(
     val user: User,
 
     @Relation(
-        parentColumn = User.userIDKey,
+        parentColumn = User.keyUserID,
         entityColumn = Address.addressIdKey
     )
     val address: List<Address>
@@ -39,8 +39,12 @@ data class GardenPlanting(
      */
     @ColumnInfo(name = "last_watering_date")
     val lastWateringDate: Calendar = Calendar.getInstance()
+
 ) {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "wordID")
     var gardenPlantingId: Long = 0
+    fun a() : Unit {
+        val cal: Date = Calendar.getInstance().time
+    }
 }

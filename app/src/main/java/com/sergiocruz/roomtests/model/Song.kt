@@ -46,7 +46,7 @@ data class PlaylistSongCrossRef(
     val playlistId: Long,
 
     @SerializedName(keySongId)
-    @ColumnInfo(name = keySongId)
+    @ColumnInfo(name = keySongId, index = true)
     val songId: Long,
 ) {
     companion object {

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "2742e560c7ce16ecc58e2b63f58ddfff",
+    "identityHash": "a5e3318276338a852528f8cfe6fcdbd9",
     "entities": [
       {
         "tableName": "user_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER PRIMARY KEY AUTOINCREMENT, `firstName` TEXT, `birth_date` INTEGER, `addressID` INTEGER, `city` TEXT, `street` TEXT, `post_code` INTEGER, `wordID` INTEGER, `word` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER PRIMARY KEY AUTOINCREMENT, `first_name` TEXT, `last_name` TEXT, `birth_date` INTEGER, `addressID` INTEGER, `city` TEXT, `street` TEXT, `post_code` INTEGER, `wordID` INTEGER, `word` TEXT)",
         "fields": [
           {
             "fieldPath": "userId",
@@ -16,7 +16,13 @@
           },
           {
             "fieldPath": "firstName",
-            "columnName": "firstName",
+            "columnName": "first_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lastName",
+            "columnName": "last_name",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -165,7 +171,16 @@
           ],
           "autoGenerate": true
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_library_table_userOwnerId",
+            "unique": false,
+            "columnNames": [
+              "userOwnerId"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_library_table_userOwnerId` ON `${TABLE_NAME}` (`userOwnerId`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "user_table",
@@ -182,7 +197,7 @@
       },
       {
         "tableName": "playlist_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`playlistId` INTEGER PRIMARY KEY AUTOINCREMENT, `userCreatorId` INTEGER NOT NULL, `playlistName` TEXT NOT NULL, FOREIGN KEY(`userCreatorId`) REFERENCES `user_table`(`user_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`playlistId` INTEGER PRIMARY KEY AUTOINCREMENT, `userCreatorId` INTEGER NOT NULL, `playlistName` TEXT NOT NULL, FOREIGN KEY(`userCreatorId`) REFERENCES `user_table`(`user_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "playlistId",
@@ -209,12 +224,21 @@
           ],
           "autoGenerate": true
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_playlist_table_userCreatorId",
+            "unique": false,
+            "columnNames": [
+              "userCreatorId"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_playlist_table_userCreatorId` ON `${TABLE_NAME}` (`userCreatorId`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "user_table",
-            "onDelete": "NO ACTION",
-            "onUpdate": "NO ACTION",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
             "columns": [
               "userCreatorId"
             ],
@@ -280,7 +304,16 @@
           ],
           "autoGenerate": false
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_PlaylistSongCrossRef_songId",
+            "unique": false,
+            "columnNames": [
+              "songId"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_PlaylistSongCrossRef_songId` ON `${TABLE_NAME}` (`songId`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "playlist_table",
@@ -310,7 +343,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2742e560c7ce16ecc58e2b63f58ddfff')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a5e3318276338a852528f8cfe6fcdbd9')"
     ]
   }
 }

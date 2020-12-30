@@ -12,22 +12,27 @@ import kotlin.collections.ArrayList
 data class User(
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = userIDKey)
+    @ColumnInfo(name = keyUserID)
     val userId: Long? = null,
 
-    @SerializedName(firstNameKey)
+    @SerializedName(keyFirstName)
+    @ColumnInfo(name = keyFirstName)
     val firstName: String?,
 
+    @SerializedName(keyLastName)
+    @ColumnInfo(name = keyLastName)
+    val lastName: String? = "",
+
     @JsonAdapter(DateTypeAdapter::class)
-    @SerializedName(birthDateKey)
-    @ColumnInfo(name = birthDateKey)
+    @SerializedName(keyBirthDate)
+    @ColumnInfo(name = keyBirthDate)
     val birthDate: LocalDate?,
 
-    @SerializedName(addressKey)
+    @SerializedName(keyAddress)
     @Embedded // vai criar a tabela com os campos extra do campo @Embedded
     val address: Address?,
 
-    @SerializedName(secretWordKey)
+    @SerializedName(keySecretWord)
     @Embedded
     val secretWord: Word?,
 
@@ -41,10 +46,11 @@ data class User(
 
     companion object {
         const val tableName = "user_table"
-        const val userIDKey = "user_id"
-        const val firstNameKey = "first_name"
-        const val birthDateKey = "birth_date"
-        const val addressKey = "address"
-        const val secretWordKey = "secret_word"
+        const val keyUserID = "user_id"
+        const val keyFirstName = "first_name"
+        const val keyLastName = "last_name"
+        const val keyBirthDate = "birth_date"
+        const val keyAddress = "address"
+        const val keySecretWord = "secret_word"
     }
 }

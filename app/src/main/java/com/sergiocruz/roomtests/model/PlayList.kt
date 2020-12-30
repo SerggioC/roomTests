@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 
 @Entity(
     foreignKeys = [ForeignKey(entity = User::class,
-        parentColumns = [User.userIDKey],
+        parentColumns = [User.keyUserID],
         childColumns = [Playlist.keyUserCreatorID],
         onDelete = CASCADE,
         onUpdate = CASCADE)],
@@ -19,7 +19,7 @@ data class Playlist(
     val playlistId: Long? = null,
 
     @SerializedName(keyUserCreatorID)
-    @ColumnInfo(name = keyUserCreatorID)
+    @ColumnInfo(name = keyUserCreatorID, index = true)
     val userCreatorId: Long,
 
     @SerializedName(keyPlaylistName)
@@ -40,7 +40,7 @@ data class UserWithPlaylists(
     val user: User,
 
     @Relation(
-        parentColumn = User.userIDKey,
+        parentColumn = User.keyUserID,
         entityColumn = Playlist.keyUserCreatorID)
     val playlists: List<Playlist>,
 )

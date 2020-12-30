@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "84ee840fb662628c0d4bf13b7e7d69e1",
+    "identityHash": "93cfdec62d0059299c0b6d8f8f02b247",
     "entities": [
       {
         "tableName": "user_table",
@@ -165,7 +165,16 @@
           ],
           "autoGenerate": true
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_library_table_userOwnerId",
+            "unique": false,
+            "columnNames": [
+              "userOwnerId"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_library_table_userOwnerId` ON `${TABLE_NAME}` (`userOwnerId`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "user_table",
@@ -209,7 +218,16 @@
           ],
           "autoGenerate": true
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_playlist_table_userCreatorId",
+            "unique": false,
+            "columnNames": [
+              "userCreatorId"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_playlist_table_userCreatorId` ON `${TABLE_NAME}` (`userCreatorId`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "user_table",
@@ -280,7 +298,16 @@
           ],
           "autoGenerate": false
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_PlaylistSongCrossRef_songId",
+            "unique": false,
+            "columnNames": [
+              "songId"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_PlaylistSongCrossRef_songId` ON `${TABLE_NAME}` (`songId`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "playlist_table",
@@ -310,7 +337,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '84ee840fb662628c0d4bf13b7e7d69e1')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '93cfdec62d0059299c0b6d8f8f02b247')"
     ]
   }
 }

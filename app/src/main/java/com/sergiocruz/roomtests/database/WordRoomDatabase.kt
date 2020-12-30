@@ -1,28 +1,33 @@
 package com.sergiocruz.roomtests.database
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.StrictMode
+import android.os.StrictMode.VmPolicy
+import android.util.Base64
 import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.google.gson.Gson
-import com.sergiocruz.roomtests.typeadapter.DateConverter
+import com.sergiocruz.roomtests.R
 import com.sergiocruz.roomtests.model.*
+import com.sergiocruz.roomtests.typeadapter.DateConverter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.time.LocalDate
-import java.util.*
-import kotlin.math.log
+
 
 /**
  * This is the backend. The database. This used to be done by the OpenHelper.
  * The fact that this has very few comments emphasizes its coolness.
  */
 @Database(entities = [User::class, Address::class, Word::class, Library::class, Playlist::class, Song::class, PlaylistSongCrossRef::class],
-    version = 3,
+    version = 1,
     exportSchema = true)
 @TypeConverters(DateConverter::class)
 abstract class WordRoomDatabase : RoomDatabase() {
@@ -45,18 +50,23 @@ abstract class WordRoomDatabase : RoomDatabase() {
         private fun buildDatabase(context: Context, scope: CoroutineScope): WordRoomDatabase {
             return Room.databaseBuilder(context, WordRoomDatabase::class.java, DATABASE_NAME)
                 .fallbackToDestructiveMigration()
-                .addCallback(WordDatabaseCallback(scope))
+                .addCallback(WordDatabaseCallback(scope, context))
                 .build()
         }
 
 
-        private class WordDatabaseCallback(private val scope: CoroutineScope) :
+        private class WordDatabaseCallback(
+            private val scope: CoroutineScope,
+            private val context: Context,
+        ) :
             RoomDatabase.Callback() {
             override fun onOpen(db: SupportSQLiteDatabase) {
                 super.onOpen(db)
+
                 INSTANCE?.let { database: WordRoomDatabase ->
                     scope.launch(Dispatchers.IO) {
                         populateDatabase(database.wordDao())
+                        largeFileTestIO(database.wordDao(), context)
                     }
                 }
             }
@@ -76,6 +86,33 @@ abstract class WordRoomDatabase : RoomDatabase() {
             }
         }
 
+        private suspend fun largeFileTestIO(dao: WordDao, context: Context) {
+            val bit: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.image_test)
+            val str = bitMapToString(bit)
+            val user = User(firstName = str,
+                lastName = str,
+                address = null,
+                birthDate = LocalDate.now(),
+                secretWord = null)
+            val uid = dao.insertUser(user)
+            dao.insertUser(user)
+            dao.insertUser(user)
+            dao.insertUser(user)
+            dao.insertUser(user)
+            dao.insertUser(user)
+            dao.insertUser(user)
+            dao.insertUser(user)
+            dao.insertUser(user)
+            dao.insertUser(user)
+            Log.i("TAG", "uid: $uid");
+        }
+
+        fun bitMapToString(bitmap: Bitmap): String? {
+            val baos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.PNG, 50, baos)
+            val b: ByteArray = baos.toByteArray()
+            return Base64.encodeToString(b, Base64.DEFAULT)
+        }
         /**
          * Populate the database in a new coroutine.
          * If you want to start with more words, just add them.
@@ -100,7 +137,10 @@ abstract class WordRoomDatabase : RoomDatabase() {
             val id = wordDao.insertAddress(address)
             address.addressID = id
 
-            val user = User(firstName = "JACK!", address = address, birthDate = LocalDate.now(), secretWord = word)
+            val user = User(firstName = "JACK!",
+                address = address,
+                birthDate = LocalDate.now(),
+                secretWord = word)
             val uid = wordDao.insertUser(user)
 
             val newLib = Library(title = "Minha bilbioteca", userOwnerId = uid)
@@ -123,7 +163,8 @@ abstract class WordRoomDatabase : RoomDatabase() {
             pl = Playlist(userCreatorId = uid, playlistName = "MUSICA PAH!")
             val plid2 = wordDao.insertPlayList(pl)
 
-            pl = Playlist(userCreatorId = uid2, playlistName = "MUSICA PIRILAU! HEHEHEHE 😀 😀 😀 do userID: $uid2")
+            pl = Playlist(userCreatorId = uid2,
+                playlistName = "MUSICA PIRILAU! HEHEHEHE 😀 😀 😀 do userID: $uid2")
             val plid3 = wordDao.insertPlayList(pl)
 
 
@@ -148,13 +189,19 @@ abstract class WordRoomDatabase : RoomDatabase() {
 
 
             //define crossref song/playlist
-            wordDao.insertPlaylistXRefSong(PlaylistSongCrossRef(playlistId = plid1, songId = songid1))
-            wordDao.insertPlaylistXRefSong(PlaylistSongCrossRef(playlistId = plid1, songId = songid4))
-            wordDao.insertPlaylistXRefSong(PlaylistSongCrossRef(playlistId = plid1, songId = songid5))
+            wordDao.insertPlaylistXRefSong(PlaylistSongCrossRef(playlistId = plid1,
+                songId = songid1))
+            wordDao.insertPlaylistXRefSong(PlaylistSongCrossRef(playlistId = plid1,
+                songId = songid4))
+            wordDao.insertPlaylistXRefSong(PlaylistSongCrossRef(playlistId = plid1,
+                songId = songid5))
 
-            wordDao.insertPlaylistXRefSong(PlaylistSongCrossRef(playlistId = plid2, songId = songid2))
-            wordDao.insertPlaylistXRefSong(PlaylistSongCrossRef(playlistId = plid2, songId = songid3))
-            wordDao.insertPlaylistXRefSong(PlaylistSongCrossRef(playlistId = plid2, songId = songid6))
+            wordDao.insertPlaylistXRefSong(PlaylistSongCrossRef(playlistId = plid2,
+                songId = songid2))
+            wordDao.insertPlaylistXRefSong(PlaylistSongCrossRef(playlistId = plid2,
+                songId = songid3))
+            wordDao.insertPlaylistXRefSong(PlaylistSongCrossRef(playlistId = plid2,
+                songId = songid6))
 
             val lista = listOf(
                 PlaylistSongCrossRef(playlistId = plid3, songId = songid1),

@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 
 @Entity(
     foreignKeys = [ForeignKey(entity = User::class,
-    parentColumns = [User.userIDKey],
+    parentColumns = [User.keyUserID],
     childColumns = [Library.keyuserOwnerId],
     onDelete = CASCADE)],
     tableName = Library.tableName)
@@ -22,7 +22,7 @@ data class Library(
     val title: String,
 
     @SerializedName(keyuserOwnerId)
-    @ColumnInfo(name = keyuserOwnerId)
+    @ColumnInfo(name = keyuserOwnerId, index = true)
     val userOwnerId: Long,
 ) {
     companion object {
@@ -39,7 +39,7 @@ data class UserAndLibrary(
     val user: User,
 
     @Relation(
-        parentColumn = User.userIDKey,
-        entityColumn = "userOwnerId")
+        parentColumn = User.keyUserID,
+        entityColumn = Library.keyuserOwnerId)
     val library: Library,
 )

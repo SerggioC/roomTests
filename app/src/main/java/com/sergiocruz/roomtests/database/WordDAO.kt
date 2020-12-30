@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface WordDao {
 
-    //@RewriteQueriesToDropUnusedColumns
+    @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * FROM words_table ORDER BY word ASC")
     fun getAlphabetizedWords(): Flow<List<Word>>
 
